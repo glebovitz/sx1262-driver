@@ -70,14 +70,14 @@ def on_rx():
     """
     IRQ callback invoked by the driver when a packet is received.
     """
-    status = lora.status()
+    status = radio.status()
 
     if status == STATUS_RX_DONE:
-        available = lora.available()
-        data = lora.get(available)
+        available = radio.available()
+        data = radio.get(available)
 
-        rssi = lora.packetRssi()
-        snr = lora.snr()
+        rssi = radio.packetRssi()
+        snr = radio.snr()
 
         print("\n--- PACKET RECEIVED ---")
         print(f"Bytes: {available}")
@@ -96,16 +96,19 @@ def on_rx():
         print("RX timeout (unexpected in continuous mode)")
     else:
         print("Nada")
+    irq = radio.getIrqStatus()
+    radio.clearIrqStatus(irq)
+
 
 
 def main():
-    global lora
+    global radio
 
     print("Initializing SX1262…")
 
-    lora = SX126x()
+    radio = SX126x()
 
-    ok = lora.begin(
+    ok = radio.begin(
         bus=SPI_BUS,
         cs=SPI_DEV,
         reset=RESET_PIN,
@@ -129,10 +132,10 @@ def main():
 
 
     # Frequency
-    lora.setFrequency(FREQUENCY_HZ)
+    radio.setFrequency(FREQUENCY_HZ)
 
     # LoRa modulation
-    lora.setLoRaModulation(
+    radio.setLoRaModulation(
         sf=SPREADING_FACTOR,
         bw=BANDWIDTH_HZ,
         cr=CODING_RATE,
@@ -140,7 +143,7 @@ def main():
     )
 
     # Packet parameters
-    lora.setLoRaPacket(
+    radio.setLoRaPacket(
         headerType=HEADER_EXPLICIT,
         preambleLength=PREAMBLE_LENGTH,
         payloadLength=PAYLOAD_LENGTH,
@@ -149,15 +152,15 @@ def main():
     )
 
     # Optional: boosted gain
-    lora.setRxGain(RX_GAIN_BOOSTED)
+    radio.setRxGain(RX_GAIN_BOOSTED)
 
     # Register callback
-    lora.onReceive(on_rx)
+    radio.onReceive(on_rx)
 
     print(f"Starting continuous receive at {FREQUENCY_HZ/1e6:.6f} MHz…")
     print("Waiting for packets…")
 
-    ok = lora.request(RX_CONTINUOUS)
+    ok = radio.request(RX_CONTINUOUS)
     if not ok:
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
 
@@ -166,7 +169,7 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         print("Shutting down…")
-        lora.end()
+        radio.end()
 
 
 if __name__ == "__main__":
