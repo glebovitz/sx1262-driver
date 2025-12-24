@@ -2,6 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Api:
     ### SX126X API: OPERATIONAL MODES COMMANDS ###
@@ -297,29 +298,29 @@ class SX1262Api:
 
     def _fixLoRaBw500(self, bw: int) :
         packetType = self.getPakcetType()
-        buf = self.readRegister(self.REG_TX_MODULATION, 1)
+        buf = self.readRegister(REG_TX_MODULATION, 1)
         value = buf[0] | 0x04
-        if packetType == self.LORA_MODEM and bw == self.BW_500000 :
+        if packetType == LORA_MODEM and bw == BW_500000 :
             value = buf[0] & 0xFB
-        self.writeRegister(self.REG_TX_MODULATION, (value,), 1)
+        self.writeRegister(REG_TX_MODULATION, (value,), 1)
 
     def _fixResistanceAntenna(self) :
-        buf = self.readRegister(self.REG_TX_CLAMP_CONFIG, 1)
+        buf = self.readRegister(REG_TX_CLAMP_CONFIG, 1)
         value = buf[0] | 0x1E
-        self.writeRegister(self.REG_TX_CLAMP_CONFIG, (value,), 1)
+        self.writeRegister(REG_TX_CLAMP_CONFIG, (value,), 1)
 
     def _fixRxTimeout(self) :
-        self.writeRegister(self.REG_RTC_CONTROL, (0,), 1)
-        buf = self.readRegister(self.REG_EVENT_MASK, 1)
+        self.writeRegister(REG_RTC_CONTROL, (0,), 1)
+        buf = self.readRegister(REG_EVENT_MASK, 1)
         value = buf[0] | 0x02
-        self.writeRegister(self.REG_EVENT_MASK, (value,), 1)
+        self.writeRegister(REG_EVENT_MASK, (value,), 1)
 
     def _fixInvertedIq(self, invertIq: bool) :
-        buf = self.readRegister(self.REG_IQ_POLARITY_SETUP, 1)
+        buf = self.readRegister(REG_IQ_POLARITY_SETUP, 1)
         value = buf[0] & 0xFB
         if invertIq :
             value = buf[0] | 0x04
-        self.writeRegister(self.REG_IQ_POLARITY_SETUP, (value,), 1)
+        self.writeRegister(REG_IQ_POLARITY_SETUP, (value,), 1)
 
 ### SX126X API: UTILITIES ###
 

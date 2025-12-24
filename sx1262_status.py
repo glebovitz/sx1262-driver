@@ -2,6 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Status:
 ### WAIT, OPERATION STATUS, AND PACKET STATUS METHODS ###
@@ -24,18 +25,18 @@ class SX1262Status:
         if self._statusIrq :
             # immediately return when interrupt signal hit
             return True
-        elif self._statusWait == self.STATUS_TX_WAIT :
+        elif self._statusWait == STATUS_TX_WAIT :
             # for transmit, calculate transmit time and set back txen pin to previous state
             self._transmitTime = time.time() - self._transmitTime
             if self._txen != -1 :
                 self.gpio.output(self._txen, self._txState)
-        elif self._statusWait == self.STATUS_RX_WAIT :
+        elif self._statusWait == STATUS_RX_WAIT :
             # for receive, get received payload length and buffer index and set back txen pin to previous state
             (self._payloadTxRx, self._bufferIndex) = self.getRxBufferStatus()
             if self._txen != -1 :
                 self.gpio.output(self._txen, self._txState)
             self._fixRxTimeout()
-        elif self._statusWait == self.STATUS_RX_CONTINUOUS :
+        elif self._statusWait == STATUS_RX_CONTINUOUS :
             # for receive continuous, get received payload length and buffer index and clear IRQ status
             (self._payloadTxRx, self._bufferIndex) = self.getRxBufferStatus()
             self.clearIrqStatus(0x03FF)
@@ -48,17 +49,17 @@ class SX1262Status:
 
         # set back status IRQ for RX continuous operation
         statusIrq = self._statusIrq
-        if self._statusWait == self.STATUS_RX_CONTINUOUS :
+        if self._statusWait == STATUS_RX_CONTINUOUS :
             self._statusIrq = 0x0000
 
         # get status for transmit and receive operation based on status IRQ
-        if statusIrq & self.IRQ_TIMEOUT :
-            if self._statusWait == self.STATUS_TX_WAIT : return self.STATUS_TX_TIMEOUT
-            else : return self.STATUS_RX_TIMEOUT
-        elif statusIrq & self.IRQ_HEADER_ERR : return self.STATUS_HEADER_ERR
-        elif statusIrq & self.IRQ_CRC_ERR : return self.STATUS_CRC_ERR
-        elif statusIrq & self.IRQ_TX_DONE : return self.STATUS_TX_DONE
-        elif statusIrq & self.IRQ_RX_DONE : return self.STATUS_RX_DONE
+        if statusIrq & IRQ_TIMEOUT :
+            if self._statusWait == STATUS_TX_WAIT : return STATUS_TX_TIMEOUT
+            else : return STATUS_RX_TIMEOUT
+        elif statusIrq & IRQ_HEADER_ERR : return STATUS_HEADER_ERR
+        elif statusIrq & IRQ_CRC_ERR : return STATUS_CRC_ERR
+        elif statusIrq & IRQ_TX_DONE : return STATUS_TX_DONE
+        elif statusIrq & IRQ_RX_DONE : return STATUS_RX_DONE
 
         # return TX or RX wait status
         return self._statusWait

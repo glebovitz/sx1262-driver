@@ -2,7 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
-from sx1262_constants import SX1262Constants
+from sx1262_vars import SX1262Vars
 from sx1262_api import SX1262Api
 from sx1262_common import SX1262Common 
 from sx1262_hardware import  SX1262Hardware
@@ -13,7 +13,7 @@ from sx1262_status import SX1262Status
 from sx1262_interrupt import SX1262Interrupt
 
 class SX1262 (
-    SX1262Constants,
+    SX1262Vars,
     SX1262Api,
     SX1262Common,
     SX1262Hardware,

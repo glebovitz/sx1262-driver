@@ -2,6 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Receive:
 ### RECEIVE RELATED METHODS ###
@@ -9,20 +10,20 @@ class SX1262Receive:
     def request(self, timeout: int = RX_SINGLE) -> bool :
 
         # skip to enter RX mode when previous RX operation incomplete
-        if self.getMode() == self.STATUS_MODE_RX : return False
+        if self.getMode() == STATUS_MODE_RX : return False
 
         # clear previous interrupt and set RX done, RX timeout, header error, and CRC error as interrupt source
-        self._irqSetup(self.IRQ_RX_DONE | self.IRQ_TIMEOUT | self.IRQ_HEADER_ERR | self.IRQ_CRC_ERR)
+        self._irqSetup(IRQ_RX_DONE | IRQ_TIMEOUT | IRQ_HEADER_ERR | IRQ_CRC_ERR)
 
         # set status to RX wait or RX continuous wait
-        self._statusWait = self.STATUS_RX_WAIT
+        self._statusWait = STATUS_RX_WAIT
         self._statusIrq = 0x0000
         # calculate RX timeout config
         rxTimeout = timeout << 6
-        if rxTimeout > 0x00FFFFFF : rxTimeout = self.RX_SINGLE
-        if timeout == self.RX_CONTINUOUS :
-            rxTimeout = self.RX_CONTINUOUS
-            self._statusWait = self.STATUS_RX_CONTINUOUS
+        if rxTimeout > 0x00FFFFFF : rxTimeout = RX_SINGLE
+        if timeout == RX_CONTINUOUS :
+            rxTimeout = RX_CONTINUOUS
+            self._statusWait = STATUS_RX_CONTINUOUS
 
         # save current txen pin state and set txen pin to high
         if self._txen != -1 :
@@ -40,7 +41,7 @@ class SX1262Receive:
             print("IRQ level:", self.gpio.input(self._irq))
 
             self.gpio.remove_event_detect(16)
-            if timeout == self.RX_CONTINUOUS :
+            if timeout == RX_CONTINUOUS :
                 self.gpio.add_event_detect(self._irq, self.gpio.RISING, callback=self._interruptRxContinuous, bouncetime=10)
             else :
                 self.gpio.add_event_detect(self._irq, self.gpio.RISING, callback=self._interruptRx, bouncetime=10)
@@ -49,13 +50,13 @@ class SX1262Receive:
     def listen(self, rxPeriod: int, sleepPeriod: int) -> bool :
 
         # skip to enter RX mode when previous RX operation incomplete
-        if self.getMode() == self.STATUS_MODE_RX : return False
+        if self.getMode() == STATUS_MODE_RX : return False
 
         # clear previous interrupt and set RX done, RX timeout, header error, and CRC error as interrupt source
-        self._irqSetup(self.IRQ_RX_DONE | self.IRQ_TIMEOUT | self.IRQ_HEADER_ERR | self.IRQ_CRC_ERR)
+        self._irqSetup(IRQ_RX_DONE | IRQ_TIMEOUT | IRQ_HEADER_ERR | IRQ_CRC_ERR)
 
         # set status to RX wait or RX continuous wait
-        self._statusWait = self.STATUS_RX_WAIT
+        self._statusWait = STATUS_RX_WAIT
         self._statusIrq = 0x0000
         # calculate RX period and sleep period config
         rxPeriod = rxPeriod << 6

@@ -2,6 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Transmit:
 ### TRANSMIT RELATED METHODS ###
@@ -21,19 +22,19 @@ class SX1262Transmit:
     def endPacket(self, timeout: int = TX_SINGLE) -> bool :
 
         # skip to enter TX mode when previous TX operation incomplete
-        if self.getMode == self.STATUS_MODE_TX : return False
+        if self.getMode == STATUS_MODE_TX : return False
 
         # clear previous interrupt and set TX done, and TX timeout as interrupt source
-        self._irqSetup(self.IRQ_TX_DONE | self.IRQ_TIMEOUT)
+        self._irqSetup(IRQ_TX_DONE | IRQ_TIMEOUT)
         # set packet payload length
         self.setPacketParamsLoRa(self._preambleLength, self._headerType, self._payloadTxRx, self._crcType, self._invertIq)
 
         # set status to TX wait
-        self._statusWait = self.STATUS_TX_WAIT
+        self._statusWait = STATUS_TX_WAIT
         self._statusIrq = 0x0000
         # calculate TX timeout config
         txTimeout = timeout << 6
-        if txTimeout > 0x00FFFFFF : txTimeout = self.TX_SINGLE
+        if txTimeout > 0x00FFFFFF : txTimeout = TX_SINGLE
 
         # set device to transmit mode with configured timeout or single operation
         self.setTx(txTimeout)

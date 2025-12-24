@@ -2,6 +2,7 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Interrupt:
 ### INTERRUPT HANDLER METHODS ###

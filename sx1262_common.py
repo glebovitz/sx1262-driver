@@ -2,10 +2,11 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 ### COMMON OPERATIONAL METHODS ###
 class SX1262Common:
-    def begin(self, bus: int = _bus, cs: int = _cs, reset: int = _reset, busy: int = _busy, irq: int = _irq, txen: int = _txen, rxen: int = _rxen, wake: int = _wake) :
+    def begin(self, bus: int = Bus, cs: int = Cs, reset: int = Reset, busy: int = Busy, irq: int = Irq, txen: int = Txen, rxen: int = Rxen, wake: int = Wake) :
         print(f"pins: bus: {bus} cs:{cs} reset:{reset} irq: {irq} busy: {busy}")
         # set spi and gpio pins
         self.setSpi(bus, cs)
@@ -14,16 +15,16 @@ class SX1262Common:
         self.reset()
 
         # check if device connect and set modem to LoRa
-        self.setStandby(self.STANDBY_RC)
-        if self.getMode() != self.STATUS_MODE_STDBY_RC :
+        self.setStandby(STANDBY_RC)
+        if self.getMode() != STATUS_MODE_STDBY_RC :
             return False
-        self.setPacketType(self.LORA_MODEM)
+        self.setPacketType(LORA_MODEM)
         self._fixResistanceAntenna()
         return True
 
     def end(self) :
 
-        self.sleep(self.SLEEP_COLD_START)
+        self.sleep(SLEEP_COLD_START)
         self.spi.close()
         self.gpio.cleanup()
 
@@ -55,14 +56,14 @@ class SX1262Common:
             self.gpio.setup(self._wake, self.gpio.OUT)
             self.gpio.output(self._wake, self.gpio.LOW)
             time.sleep(0.0005)
-        self.setStandby(self.STANDBY_RC)
+        self.setStandby(STANDBY_RC)
         self._fixResistanceAntenna()
 
     def standby(self, option = STANDBY_RC) :
 
         self.setStandby(option)
 
-    def busyCheck(self, timeout: int = _busyTimeout) :
+    def busyCheck(self, timeout: int = BusyTimeout) :
 
         # wait for busy pin to LOW or timeout reached
         t = time.time()

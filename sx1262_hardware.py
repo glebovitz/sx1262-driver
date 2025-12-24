@@ -2,11 +2,12 @@ from base import BaseLoRa
 import spidev
 import RPi.GPIO
 import time
+from sx1262_constants import *
 
 class SX1262Hardware:
 ### HARDWARE CONFIGURATION METHODS ###
 
-    def setSpi(self, bus: int, cs: int, speed: int = _spiSpeed) :
+    def setSpi(self, bus: int, cs: int, speed: int = SpiSpeed) :
 
         self._bus = bus
         self._cs = cs
@@ -40,20 +41,20 @@ class SX1262Hardware:
 
     def setDio2RfSwitch(self, enable: bool = True) :
 
-        if enable : self.setDio2AsRfSwitchCtrl(self.DIO2_AS_RF_SWITCH)
-        else : self.setDio2AsRfSwitchCtrl(self.DIO2_AS_IRQ)
+        if enable : self.setDio2AsRfSwitchCtrl(DIO2_AS_RF_SWITCH)
+        else : self.setDio2AsRfSwitchCtrl(DIO2_AS_IRQ)
 
     def setDio3TcxoCtrl(self, tcxoVoltage, delayTime) :
 
         self.setDio3AsTcxoCtrl(tcxoVoltage, delayTime)
-        self.setStandby(self.STANDBY_RC)
+        self.setStandby(STANDBY_RC)
         self.calibrate(0xFF)
 
     def setXtalCap(self, xtalA, xtalB) :
 
-        self.setStandby(self.STANDBY_XOSC)
-        self.writeRegister(self.REG_XTA_TRIM, (xtalA, xtalB), 2)
-        self.setStandby(self.STANDBY_RC)
+        self.setStandby(STANDBY_XOSC)
+        self.writeRegister(REG_XTA_TRIM, (xtalA, xtalB), 2)
+        self.setStandby(STANDBY_RC)
         self.calibrate(0xFF)
 
     def setRegulator(self, regMode) :
@@ -63,4 +64,4 @@ class SX1262Hardware:
     def setCurrentProtection(self, level) :
         #avoid wrap-around of OCP register, which has 6bits
         if level > 63 : level = 63
-        self.writeRegister(self.REG_OCP_CONFIGURATION, (level,), 1)
+        self.writeRegister(REG_OCP_CONFIGURATION, (level,), 1)
