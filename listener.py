@@ -36,11 +36,11 @@ def start_background_rssi(driver, interval=5):
     def loop():
         while True:
             try:
-                status, rssi = driver.getFullRssiInst()
+                rssi = driver.rssiInst()
                 print("RSSI:", rssi)
                 # Flush the SPI bus with a dummy transaction
-                resp = driver.getChipStatus()
-                print("Raw GET_STATUS bytes:", resp)
+                resp = driver.getMode()
+                print("Raw GET_STATUS bytes:", hex(resp))
 
 
             except Exception as e:

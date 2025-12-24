@@ -1218,7 +1218,7 @@ class SX126x(BaseLoRa) :
             return None  # chip is busy, no status
 
         gpio.output(self._cs_define, gpio.LOW)
-        resp = spi.xfer2([0xC0, 0x00])  # [undefined, status]
+        resp = spi.xfer2([0xC0, 0])  # [undefined, status]
         gpio.output(self._cs_define, gpio.HIGH)
 
         # resp[0] is garbage during opcode; resp[1] is the status byte
@@ -1238,7 +1238,7 @@ class SX126x(BaseLoRa) :
         return buf[1]
 
     def getFullRssiInst(self):
-        resp = self._readBytes(0x15, 2)
+        resp = self._readBytes(0x15, 4)
         status = resp[0]
         rssi_raw = resp[1]
 
