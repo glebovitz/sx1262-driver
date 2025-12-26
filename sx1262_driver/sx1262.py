@@ -3,7 +3,7 @@ import spidev
 import lgpio
 import time
 
-from core.event_emitter import EventEmitter
+from .core.event_emitter import EventEmitter
 
 from .base import BaseLoRa
 from .sx1262_vars import SX1262Vars
