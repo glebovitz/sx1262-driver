@@ -54,7 +54,7 @@ class EventEmitter:
             coro = self._safe_invoke(entry["callback"], *args, **kwargs)
 
             if current_thread_id != self._loop_thread_id:
-                print(f"[EventEmitter] Cross-thread emit detected for '{event}'")
+                # print(f"[EventEmitter] Cross-thread emit detected for '{event}'")
                 self._loop.call_soon_threadsafe(asyncio.create_task, coro)
             else:
                 self._loop.create_task(coro)
