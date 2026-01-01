@@ -287,6 +287,6 @@ class SX1262Modem:
         )
 
     def get_sync_word(self):
-        msb = self.read_register(0x0740)   # REG_LORA_SYNC_WORD_MSB
-        lsb = self.read_register(0x0741)   # REG_LORA_SYNC_WORD_LSB
+        msb = self.read_register(0x0740, 1)[0]   # REG_LORA_SYNC_WORD_MSB
+        lsb = self.read_register(0x0741, 1)[0]   # REG_LORA_SYNC_WORD_LSB
         return (msb << 8) | lsb
