@@ -32,7 +32,8 @@ class SX1262Common:
         self._fix_resistance_antenna()
 
         # Start internal IRQ polling loop (event-driven interface)
-        self._start_recv_loop()
+        # do this manually in the main startup.
+        # self._start_recv_loop()
 
         return True
 
@@ -91,10 +92,10 @@ class SX1262Common:
         return status & 0x70
 
     # -------------------------------------------------------------------------
-    # Internal IRQ polling loop -> emits events via SX1262Interrupt._handle_irq
+    # Externally called IRQ polling loop -> emits events via SX1262Interrupt._handle_irq
     # -------------------------------------------------------------------------
 
-    def _start_recv_loop(self, interval: float = 0.01):
+    def start_recv_loop(self, interval: float = 0.01):
         """
         Start a background thread that polls get_irq_status() and dispatches
         events via _handle_irq(). Safe to call multiple times.
@@ -114,7 +115,7 @@ class SX1262Common:
                 mode = self.get_mode()
                 rssi = self.rssi_inst()
                 if count == 1000:
-                    print(f"recv Loop rssi {rssi} mode {mode}")
+                    print(f"recv Loop rssi {rssi} mode {hex(mode)}")
                     count = 0
                 else:
                     count += 1
@@ -127,6 +128,8 @@ class SX1262Common:
 
         self._recv_thread = threading.Thread(target=loop, daemon=True)
         self._recv_thread.start()
+
+    # Internally called by end
 
     def _stop_recv_loop(self):
         """

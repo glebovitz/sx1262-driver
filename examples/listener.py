@@ -122,6 +122,7 @@ def main():
     ok = radio.request(RX_CONTINUOUS)
     if not ok:
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
+    radio.start_recv_loop()
 
     try:
         while True:
