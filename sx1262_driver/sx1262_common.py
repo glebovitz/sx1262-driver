@@ -121,7 +121,7 @@ class SX1262Common:
                 mode = self.get_mode() + self.get_control()
                 rssi = self.rssi_inst()
                 if count == 1000:
-                    print(f"recv Loop rssi {rssi} mode {hex(mode)}")
+                    # print(f"recv Loop rssi {rssi} mode {hex(mode)}")
                     count = 0
                 else:
                     count += 1
