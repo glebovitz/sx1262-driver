@@ -122,6 +122,7 @@ def main():
     ok = radio.request(RX_CONTINUOUS)
     if not ok:
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
+    print(f"sync word is {hex(radio.get_sync_word())}")
     radio.start_recv_loop()
 
     try:

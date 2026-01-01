@@ -285,3 +285,8 @@ class SX1262Modem:
         self.write_register(
             REG_FSK_WHITENING_INITIAL_MSB, (whitening >> 8, whitening & 0xFF), 2
         )
+
+    def get_sync_word(self):
+        msb = self.read_register(0x0740)   # REG_LORA_SYNC_WORD_MSB
+        lsb = self.read_register(0x0741)   # REG_LORA_SYNC_WORD_LSB
+        return (msb << 8) | lsb
