@@ -31,10 +31,9 @@ class SX1262(
 ):
     def __init__(self):
         # Initialize EventEmitter first so it's ready before we emit anything
-        super().__init__()
         EventEmitter.__init__(self)
         # Initialize all mixins / BaseLoRa as before
-
+        super().__init__()
 
         self.spi = spidev.SpiDev()
 
