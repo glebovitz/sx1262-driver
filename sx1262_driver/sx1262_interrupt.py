@@ -6,7 +6,7 @@ from sx1262_constants import *
 class SX1262Interrupt:
     def __init__(self):
         super().__init__()
-        
+
     # INTERRUPT HANDLER METHODS
 
     def _irq_setup(self, irq_mask):
@@ -80,7 +80,6 @@ class SX1262Interrupt:
         Internal RX handler for continuous mode; does not restore TXEN.
         """
         self._status_irq = self.get_irq_status()
-        self.clear_irq_status(IRQ_ALL)
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
 
         self.emit(
@@ -99,6 +98,7 @@ class SX1262Interrupt:
         Decode IRQ bits and invoke internal handlers and/or emit events.
         This is called by the internal recv_loop.
         """
+        print(f"handle irq ... {irq}")
         # Keep legacy status() path in sync
         self._status_irq = irq
 
