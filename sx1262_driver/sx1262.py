@@ -40,3 +40,5 @@ class SX1262(
 
         # lgpio: open /dev/gpiochip0 explicitly and keep a handle
         self.gpio_chip = lgpio.gpiochip_open(0)
+        self._recv_thread = None
+        self._recv_running = False
