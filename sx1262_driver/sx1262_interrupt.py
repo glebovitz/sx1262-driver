@@ -98,7 +98,7 @@ class SX1262Interrupt:
         Decode IRQ bits and invoke internal handlers and/or emit events.
         This is called by the internal recv_loop.
         """
-        print(f"handle irq ... {irq}")
+        print(f"handle irq ... {hex(irq)}")
         # Keep legacy status() path in sync
         self._status_irq = irq
 

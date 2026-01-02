@@ -8,7 +8,9 @@ import lgpio
 class SX1262Common:
     def __init__(self):
         super().__init__()
-        
+        self._recv_thread =  None
+        self._recv_running = False
+
     def begin(
         self,
         bus: int = BUS,
@@ -102,9 +104,7 @@ class SX1262Common:
         Start a background thread that polls get_irq_status() and dispatches
         events via _handle_irq(). Safe to call multiple times.
         """
-        if getattr(self, "_recv_thread", None) and getattr(
-            self, "_recv_running", False
-        ):
+        if self._recv_thread and self._recv_running:
             return
 
         self._recv_interval = interval
