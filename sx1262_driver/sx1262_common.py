@@ -6,6 +6,9 @@ import lgpio
 
 
 class SX1262Common:
+    def __init__(self):
+        super().__init__()
+        
     def begin(
         self,
         bus: int = BUS,

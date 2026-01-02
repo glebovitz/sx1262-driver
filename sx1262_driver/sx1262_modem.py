@@ -4,6 +4,9 @@ from sx1262_constants import *
 
 
 class SX1262Modem:
+    def __init__(self):
+        super().__init__()
+        
     # MODEM, MODULATION PARAMETER, AND PACKET PARAMETER SETUP METHODS
 
     def set_modem(self, modem):

@@ -3,6 +3,9 @@ from sx1262_constants import *
 
 
 class SX1262Api:
+    def __init__(self):
+        super().__init__()
+        
     # OPERATIONAL MODES COMMANDS
 
     def set_sleep(self, sleep_config: int):
