@@ -110,7 +110,6 @@ async def main():
 
     print("Configuring radio…")
 
-    radio.set_sync_word(LORA_SYNC_WORD_PUBLIC)
     radio.set_frequency(FREQUENCY_HZ)
     radio.set_lora_modulation(
         sf=SPREADING_FACTOR,
@@ -126,6 +125,7 @@ async def main():
         invert_iq=INVERT_IQ,
     )
     radio.set_rx_gain(RX_GAIN_BOOSTED)
+    radio.set_sync_word(LORA_SYNC_WORD_PUBLIC)
 
     # Register event handlers
     radio.on("rx_done", handle_rx_done)
@@ -133,7 +133,7 @@ async def main():
     radio.on("header_error", handle_header_error)
     radio.on("timeout", handle_timeout)
 
-    print(f"Starting continuous receive at {FREQUENCY_HZ/1e6:.6f} MHz BW {BANDWIDTH_HZ} SF {SPREADING_FACTOR} CR {CODING_RATE}")
+    print(f"Starting continuous receive at {FREQUENCY_HZ/1e6:.6f} MHz BW {BANDWIDTH_HZ} SF {SPREADING_FACTOR} CR {CODING_RATE} sync word {LORA_SYNC_WORD_PUBLIC}")
     print("Waiting for packets…")
 
     # IMPORTANT: Attach loop BEFORE starting radio threads
