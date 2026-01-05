@@ -2,7 +2,6 @@ import time
 
 from sx1262_constants import *
 
-
 class SX1262Status:
     def __init__(self):
         super().__init__()

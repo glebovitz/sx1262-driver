@@ -35,7 +35,7 @@ otherwise.
 value = buf[0] | 0x04          # default
 if packet_type == LORA_MODEM and bw == BW_500000:
     value = buf[0] & 0xFB      # clear bit 2
-
+```
 
 ## 2. `_fix_resistance_antenna()` — PA Clamp / Antenna Mismatch Fix
 
@@ -53,6 +53,8 @@ Raise the clamp threshold by setting bits in `REG_TX_CLAMP_CONFIG`:
 ```python
 value = buf[0] | 0x1E
 self.write_register(REG_TX_CLAMP_CONFIG, (value,), 1)
+```
+
 Effect: Improves PA linearity and allows the radio to reach its intended TX power without distortion or early limiting. This is recommended for all LoRa operation, especially above 14 dBm.
 
 ## 3. `_fix_rx_timeout()` — RTC Timeout / RX Hang Fix
@@ -73,6 +75,8 @@ self.write_register(REG_RTC_CONTROL, (0,), 1)
 buf = self.read_register(REG_EVENT_MASK, 1)
 value = buf[0] | 0x02
 self.write_register(REG_EVENT_MASK, (value,), 1)
+```
+
 Effect: Ensures RX timeout events always fire correctly and prevents the radio from hanging in RX mode. This fix is essential for continuous RX and duty‑cycled RX.
 
 ## 4. `_fix_inverted_iq()` — IQ Polarity Latch Fix
@@ -101,6 +105,8 @@ value = buf[0] & 0xFB      # clear bit 2
 if invert_iq:
     value = buf[0] | 0x04  # set bit 2
 self.write_register(REG_IQ_POLARITY_SETUP, (value,), 1)
+```
+
 Effect: Guarantees that the IQ polarity is applied correctly and prevents the chip from entering the undefined “half‑latched” state that breaks demodulation. This fix is required whenever switching between standard and inverted IQ modes.
 
 Summary

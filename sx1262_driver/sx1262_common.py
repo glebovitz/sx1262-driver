@@ -1,8 +1,7 @@
 import time
-import threading
-
 from sx1262_constants import *
 import lgpio
+import threading
 
 
 class SX1262Common:
@@ -35,16 +34,9 @@ class SX1262Common:
 
         self.set_packet_type(LORA_MODEM)
         self._fix_resistance_antenna()
-
-        # Start internal IRQ polling loop (event-driven interface)
-        self._start_recv_loop()
-
         return True
 
     def end(self):
-        # Stop internal IRQ loop before shutting down hardware
-        self._stop_recv_loop()
-
         self.sleep(SLEEP_COLD_START)
         self.spi.close()
         # close gpio chip handle
@@ -95,36 +87,30 @@ class SX1262Common:
             return 0
         return status & 0x70
     
-    def get_mode_and_control(self) -> int:
-        status = self.get_status()
-        if status is None:
-            return 0
-        return status & 0x7E
-
-    # -------------------------------------------------------------------------
+        # -------------------------------------------------------------------------
     # Internal IRQ polling loop -> emits events via SX1262Interrupt._handle_irq
     # -------------------------------------------------------------------------
 
-    def _start_recv_loop(self, interval: float = 0.01):
+    def _start_recv_loop (self, interval=0.01):
         """
-        Start a background thread that polls get_irq_status() and dispatches
-        events via _handle_irq(). Safe to call multiple times.
+        Poll the IRQ status register and, if non-zero, invoke
+        the driver's internal RX interrupt handler.
         """
+
         if self._recv_thread and self._recv_running:
             return
-        print("Initiating Recv Loop")
-        self._recv_interval = interval
+        
         self._recv_running = True
 
         def loop():
-            print(f"Recv Loop Started {self._recv_running}")
             while self._recv_running:
                 irq = self.get_irq_status()
                 if irq:
-                    # Let SX1262Interrupt decode and emit events
-                    self._handle_irq(irq)
-                    print(f"after Handle_irq: status is {hex(self.get_mode_and_control())}")
-                time.sleep(self._recv_interval)
+                    if self._status_wait == STATUS_RX_CONTINUOUS:
+                        self._interrupt_rx_continuous(None)
+                    else:
+                        self._interrupt_rx(None)
+                time.sleep(interval)
 
         self._recv_thread = threading.Thread(target=loop, daemon=True)
         self._recv_thread.start()
@@ -133,9 +119,9 @@ class SX1262Common:
         """
         Stop the background IRQ polling loop.
         """
+
         if not self._recv_running:
             return
 
         self._recv_running = False
-        # Thread is daemon=True; we don't strictly need to join here.
         self._recv_thread = None
