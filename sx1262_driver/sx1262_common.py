@@ -1,7 +1,7 @@
 import time
 from sx1262_constants import *
 import lgpio
-import threading
+
 
 
 class SX1262Common:
