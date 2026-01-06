@@ -1,4 +1,7 @@
 class BaseLoRa:
+    def __init__(self):
+        super().__init__()
+        
     """
     Abstract base class for LoRa drivers.
     Concrete implementations (e.g., SX1262) must override all methods.
