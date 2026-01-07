@@ -65,7 +65,7 @@ class SX1262Interrupt:
 
         # Cache IRQ status and RX buffer status
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
-        print("got rx_done, buffer status payload lenght is {self._payload_tx_rx} buffer offset is {self._buffer_index} irq is {self._irq_status}")
+        print(f"got rx_done, buffer status payload lenght is {self._payload_tx_rx} buffer offset is {self._buffer_index} irq is {self._status_irq}")
 
         # EventEmitter: notify listeners of RX completion
         self.emit(
@@ -80,6 +80,7 @@ class SX1262Interrupt:
         Internal RX handler for continuous mode; does not restore TXEN.
         """
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
+        print("status_irq is ", self._status_irq)
 
         self.emit(
             "rx_done",
