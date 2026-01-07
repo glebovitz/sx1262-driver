@@ -138,6 +138,7 @@ async def main():
 
     # IMPORTANT: Attach loop BEFORE starting radio threads
     radio.attach_loop(asyncio.get_running_loop())
+    radio.start_recv_loop()
 
     # Start radio (creates recv thread)
     # await radio.start()

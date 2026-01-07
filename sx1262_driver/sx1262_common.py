@@ -34,7 +34,7 @@ class SX1262Common:
         self._fix_resistance_antenna()
 
         # Start internal IRQ polling loop (event-driven interface)
-        self._start_recv_loop()
+        # self._start_recv_loop()
 
         return True
 

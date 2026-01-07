@@ -169,7 +169,7 @@ class SX1262Interrupt:
     # Internal IRQ polling loop -> emits events via SX1262Interrupt._handle_irq
     # -------------------------------------------------------------------------
 
-    def _start_recv_loop(self, interval: float = 0.01):
+    def start_recv_loop(self, interval: float = 0.01):
         """
         Start a background thread that polls get_irq_status() and dispatches
         events via _handle_irq(). Safe to call multiple times.
