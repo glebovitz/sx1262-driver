@@ -99,7 +99,7 @@ class SX1262Interrupt:
         self._status_irq = irq
 
         if irq == 0x2222 and self._status_wait == STATUS_RX_CONTINUOUS:
-            self.clear.irq_status(irq)
+            self.clear_irq_status(irq)
             return
         
         # TX done
