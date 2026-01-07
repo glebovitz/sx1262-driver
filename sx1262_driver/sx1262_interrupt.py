@@ -134,7 +134,7 @@ class SX1262Interrupt:
             self.emit("cad_done", irq_status=irq)
 
         # Clear IRQs at the end to release the latch
-        self.clear_irq_status(irq)
+        self.clear_irq_status(irq) 
 
     # -------------------------------------------------------------------------
     # Back-compat helpers for existing callback-based code
