@@ -13,9 +13,10 @@ class EventEmitter:
         self._event_listeners = defaultdict(list)
         self._lock = threading.Lock()
 
-    def attach_loop(self, loop):
+    def attach_loop(self, loop: asyncio.AbstractEventLoop):
         self._loop = loop
-        self._loop_thread_id = getattr(loop, "_thread_id", threading.get_ident())
+        # We *know* this is called from the loop’s own thread
+        self._loop_thread_id = threading.get_ident()
 
     def on(self, event: str, callback: Callable):
         with self._lock:
@@ -43,12 +44,10 @@ class EventEmitter:
 
         for entry in listeners:
             coro = self._safe_invoke(entry["callback"], *args, **kwargs)
-
-            if current_thread_id != self._loop_thread_id:
-                # print(f"[EventEmitter] Cross-thread emit detected for '{event}'")
-                self._loop.call_soon_threadsafe(asyncio.create_task, coro)
-            else:
+            if self._loop_thread_id and self._loop_thread_id == current_thread_id:
                 self._loop.create_task(coro)
+            else:
+                self._loop.call_soon_threadsafe(asyncio.create_task, coro)
 
             if entry["type"] == "once":
                 self.off(event, entry["callback"])
