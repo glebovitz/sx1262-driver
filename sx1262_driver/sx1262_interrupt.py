@@ -101,7 +101,7 @@ class SX1262Interrupt:
         This is called by the internal recv_loop.
         """
         # Keep legacy status() path in sync
-        print(".../handle_irq IRQ", irq)
+        print(".../handle_irq IRQ", hex(irq))
         self._status_irq = irq
 
         # TX done
