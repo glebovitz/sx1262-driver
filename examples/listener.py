@@ -140,8 +140,10 @@ async def main():
     ok = radio.request(RX_CONTINUOUS)
     if not ok:
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
+    radio.start_recv_loop() 
     radio.attach_loop(asyncio.get_running_loop())
-    radio.start_recv_loop()
+
+
 
     # Start radio (creates recv thread)
     # await radio.start()
