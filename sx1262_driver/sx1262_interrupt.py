@@ -27,7 +27,7 @@ class SX1262Interrupt:
 
         self.set_dio_irq_params(irq_mask, dio1_mask, dio2_mask, dio3_mask)
 
-    def _interrupt_tx(self, _channel=None):
+    def _interrupt_tx(self, irq, _channel=None):
         """
         Internal TX-done handler. Called from _handle_irq().
         Restores TXEN and emits a 'tx_done' event.
@@ -39,18 +39,15 @@ class SX1262Interrupt:
             from lgpio import gpio_write
             gpio_write(self.gpio_chip, self._txen, self._tx_state)
 
-        # Cache IRQ status for legacy .status() path
-        self._status_irq = self.get_irq_status()
-
         # EventEmitter: notify listeners
         # Transmit time in seconds, plus raw IRQ status for those who care.
         self.emit(
             "tx_done",
             transmit_time=self._transmit_time,
-            irq_status=self._status_irq,
+            irq_status=irq,
         )
 
-    def _interrupt_rx(self, _channel=None):
+    def _interrupt_rx(self, irq, _channel=None):
         """
         Internal RX handler for single-shot and timeout cases.
         Restores TXEN (if used), applies _fix_rx_timeout(), reads RX buffer
@@ -72,21 +69,20 @@ class SX1262Interrupt:
             "rx_done",
             payload_length=self._payload_tx_rx,
             buffer_index=self._buffer_index,
-            irq_status=self._status_irq,
+            irq_status=irq
         )
 
-    def _interrupt_rx_continuous(self, _channel=None):
+    def _interrupt_rx_continuous(self, irq,_channel=None):
         """
         Internal RX handler for continuous mode; does not restore TXEN.
         """
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
-        print("status_irq is ", self._status_irq)
 
         self.emit(
             "rx_done",
             payload_length=self._payload_tx_rx,
             buffer_index=self._buffer_index,
-            irq_status=self._status_irq,
+            irq_status=irq,
         )
 
     # -------------------------------------------------------------------------
@@ -102,17 +98,21 @@ class SX1262Interrupt:
         print(".../handle_irq IRQ", hex(irq))
         self._status_irq = irq
 
+        if irq == 0x2222 and self._status_wait == STATUS_RX_CONTINUOUS:
+            self.clear.irq_status(irq)
+            return
+        
         # TX done
         if irq & IRQ_TX_DONE:
-            self._interrupt_tx()
+            self._interrupt_tx(irq)
 
         # RX done (single or continuous)
         if irq & IRQ_RX_DONE:
             # Decide which RX path to use based on current status_wait
             if self._status_wait == STATUS_RX_CONTINUOUS:
-                self._interrupt_rx_continuous()
+                self._interrupt_rx_continuous(irq)
             else:
-                self._interrupt_rx()
+                self._interrupt_rx(irq)
 
         # Timeout
         if irq & IRQ_TIMEOUT:
@@ -180,6 +180,7 @@ class SX1262Interrupt:
         print("Initiating Recv Loop")
         self._recv_interval = interval
         self._recv_running = True
+
 
         def loop():
             print(f"Recv Loop Started {self._recv_running}")
