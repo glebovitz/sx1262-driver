@@ -65,8 +65,9 @@ class SX1262Interrupt:
 
         # Cache IRQ status and RX buffer status
         self._status_irq = self.get_irq_status()
+        print(".../interrupt_rx IRQ Status", self._status_irq)
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
-        print("got rx_done, buffer status payload lenght is {self._payload_tx_rx} buffer offset is {self._buffer_index}")
+        print("got rx_done, buffer status payload lenght is {self._payload_tx_rx} buffer offset is {self._buffer_index} irq is {self._irq_status}")
 
         # EventEmitter: notify listeners of RX completion
         self.emit(
@@ -100,6 +101,7 @@ class SX1262Interrupt:
         This is called by the internal recv_loop.
         """
         # Keep legacy status() path in sync
+        print(".../handle_irq IRQ", irq)
         self._status_irq = irq
 
         # TX done
