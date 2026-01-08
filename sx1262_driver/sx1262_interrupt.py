@@ -53,7 +53,7 @@ class SX1262Interrupt:
         Restores TXEN (if used), applies _fix_rx_timeout(), reads RX buffer
         status, and emits 'rx_done' (or error events via _handle_irq()).
         """
-        if self._status_wait == STATUS_RX_CONTINUOUS:
+        if self._status_wait != STATUS_RX_CONTINUOUS:
             if self._txen != -1:
                 from lgpio import gpio_write
                 gpio_write(self.gpio_chip, self._txen, self._tx_state)
