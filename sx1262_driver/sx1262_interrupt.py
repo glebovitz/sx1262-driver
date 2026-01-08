@@ -160,7 +160,7 @@ class SX1262Interrupt:
         """
         if self._recv_thread and self._recv_running:
             return
-        print(f"Initiating Recv Loop {self.get_mode_and_control()}")
+        print(f"Initiating Recv Loop {hex(self.get_mode_and_control())}")
         self._recv_interval = interval
         self._recv_running = True
 
