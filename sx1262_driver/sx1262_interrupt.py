@@ -160,7 +160,7 @@ class SX1262Interrupt:
         """
         if self._recv_thread and self._recv_running:
             return
-        print(f"Initiating Recv Loop {self.get_irq_status()}")
+        print(f"Initiating Recv Loop {self.get_mode_and_control()}")
         self._recv_interval = interval
         self._recv_running = True
 
@@ -168,7 +168,7 @@ class SX1262Interrupt:
         def loop():
             print(f"Recv Loop Started {self._recv_running}")
             while self._recv_running:
-                irq = self.get_mode_and_control()
+                irq = self.get_irq_status()
                 if irq:
                     # Let SX1262Interrupt decode and emit events
                     self._handle_irq(irq)
