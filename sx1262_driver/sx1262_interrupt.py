@@ -60,6 +60,8 @@ class SX1262Interrupt:
 
             # Apply RTC / timeout errata workaround
             self._fix_rx_timeout()
+        else:
+            self.clear_irq_status(IRQ_ALL)
 
         (payload_length, buffer_index) = self.get_rx_buffer_status()
         print(f"got rx_done, buffer status payload lenght is {payload_length} buffer offset is {buffer_index} irq is {irq}")
