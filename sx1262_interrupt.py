@@ -37,13 +37,22 @@ class SX1262Interrupt:
             self._on_transmit()
 
     def _interrupt_rx(self, _channel=None):
-        if self._txen != -1:
-            from lgpio import gpio_write
+        # not in continous mode
+        if self._status_wait != STATUS_RX_CONTINUOUS:
+            if self._txen != -1:
+                from lgpio import gpio_write
 
-            gpio_write(self.gpio_chip, self._txen, self._tx_state)
+                gpio_write(self.gpio_chip, self._txen, self._tx_state)
 
-        self._fix_rx_timeout()
+            self._fix_rx_timeout()
+
         self._status_irq = self.get_irq_status()
+
+        # only clear all the irq in continous mode
+        # we will clear the specific irq later
+        
+        if self._status_wait == STATUS_RX_CONTINUOUS:
+            self.clear_irq_status(IRQ_ALL)
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
 
         if callable(self._on_receive):
