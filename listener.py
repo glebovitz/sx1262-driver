@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import threading
 import time
+import asyncio
 
 from sx1262_constants import *
 from sx1262 import SX1262 as SX126x  # adjust if your driver file has a different name
@@ -127,7 +128,7 @@ def on_rx():
     radio.clear_irq_status(irq)
 
 
-def main():
+async def main():
     global radio
 
     print("Initializing SX1262…")
@@ -193,13 +194,17 @@ def main():
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
 
     try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
+        print("starting program running")
+        await asyncio.Event().wait()
+    finally:
+        # This ALWAYS runs, even on Ctrl+C
         print("Shutting down…")
         _stop_recv_loop()
-        radio.end()
-
+        radio.end() 
 
 if __name__ == "__main__":
-    main()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        # Swallow the traceback so it looks clean
+        pass
