@@ -25,8 +25,8 @@ SPREADING_FACTOR = 7
 CODING_RATE = 5              # 4/5
 # PREAMBLE_LENGTH = 12
 # PAYLOAD_LENGTH = 32
-CRC_ENABLED = True
-INVERT_IQ = False
+# CRC_ENABLED = True
+# INVERT_IQ = False
 
 
 def start_background_rssi(driver, interval=5):
