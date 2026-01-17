@@ -52,7 +52,7 @@ class SX1262Interrupt:
 
         if self._status_wait == STATUS_RX_CONTINUOUS:
             self.clear_irq_status(IRQ_ALL)
-            
+
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
 
         self.emit(
@@ -139,14 +139,17 @@ class SX1262Interrupt:
         if irq & IRQ_TIMEOUT:
             # Emit an explicit timeout event
             self.emit("timeout", irq_status=irq)
+            self.set_rx(RX_CONTINUOUS)
 
         # Header error
         if irq & IRQ_HEADER_ERR:
             self.emit("header_error", irq_status=irq)
+            self.set_rx(RX_CONTINUOUS)
 
         # CRC error
         if irq & IRQ_CRC_ERR:
             self.emit("crc_error", irq_status=irq)
+            self.set_rx(RX_CONTINUOUS)
 
         # CAD events (if/when you use them)
         if irq & IRQ_CAD_DETECTED:
