@@ -81,7 +81,7 @@ def _start_recv_loop (driver, interval=0.01):
     _recv_thread = threading.Thread(target=loop, daemon=True)
     _recv_thread.start()
 
-def _stop_recv_loop(self):
+def _stop_recv_loop(self, radio):
     """
     Stop the background IRQ polling loop.
     """
@@ -199,7 +199,7 @@ async def main():
     finally:
         # This ALWAYS runs, even on Ctrl+C
         print("Shutting down…")
-        _stop_recv_loop()
+        _stop_recv_loop(radio)
         radio.end() 
 
 if __name__ == "__main__":
