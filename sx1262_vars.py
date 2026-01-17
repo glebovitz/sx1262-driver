@@ -1,8 +1,9 @@
 from sx1262_constants import *
 
-
 class SX1262Vars:
     def __init__(self):
+        super().__init__()
+
         # SPI and GPIO pin setting
         self._bus = BUS
         self._cs = CS

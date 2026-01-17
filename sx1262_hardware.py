@@ -2,8 +2,10 @@ import lgpio # type: ignore - pi only
 
 from sx1262_constants import *
 
-
 class SX1262Hardware:
+    def __init__(self):
+        super().__init__()
+
     def set_spi(self, bus: int, cs: int, speed: int = SPI_SPEED):
         self._bus = bus
         self._cs = cs

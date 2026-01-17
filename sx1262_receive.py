@@ -3,8 +3,10 @@ import lgpio # type: ignore - pi only
 
 from sx1262_constants import *
 
-
 class SX1262Receive:
+    def __init__(self):
+        super().__init__()
+
     # RECEIVE RELATED METHODS
 
     def request(self, timeout: int = RX_SINGLE) -> bool:

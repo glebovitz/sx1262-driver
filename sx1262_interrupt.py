@@ -2,8 +2,10 @@ import time
 
 from sx1262_constants import *
 
-
 class SX1262Interrupt:
+    def __init__(self):
+        super().__init__()
+
     # INTERRUPT HANDLER METHODS
 
     def _irq_setup(self, irq_mask):

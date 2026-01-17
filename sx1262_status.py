@@ -2,8 +2,10 @@ import time
 
 from sx1262_constants import *
 
-
 class SX1262Status:
+    def __init__(self):
+        super().__init__()
+
     # WAIT, OPERATION STATUS, AND PACKET STATUS METHODS
 
     def wait(self, timeout: int = 0) -> bool:
