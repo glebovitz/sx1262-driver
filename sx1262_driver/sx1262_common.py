@@ -108,8 +108,7 @@ class SX1262Common:
         self.set_standby(STANDBY_RC)
 
         # 3. Wait for BUSY to go low
-        while self._busy.value():
-            pass
+        print("busy check", self.busy_check())
 
         # 4. Small settling delay (SX1262 errata)
         time.sleep(0.001)
