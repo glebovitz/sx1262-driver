@@ -55,43 +55,43 @@ def start_background_rssi(driver, interval=5):
 _recv_thread = None
 _recv_running = False
 
-def _start_recv_loop (driver, interval=0.01):
-    """
-    Poll the IRQ status register and, if non-zero, invoke
-    the driver's internal RX interrupt handler.
-    """
-    global _recv_thread, _recv_running
+# def _start_recv_loop (driver, interval=0.01):
+#     """
+#     Poll the IRQ status register and, if non-zero, invoke
+#     the driver's internal RX interrupt handler.
+#     """
+#     global _recv_thread, _recv_running
 
-    if _recv_thread and _recv_running:
-        return
+#     if _recv_thread and _recv_running:
+#         return
     
-    _recv_running = True
+#     _recv_running = True
 
-    def loop():
-        while _recv_running:
-            irq = driver.get_irq_status()
-            if irq:
-                if driver._status_wait == STATUS_RX_CONTINUOUS:
-                    driver._interrupt_rx_continuous(None)
-                else:
-                    driver._interrupt_rx(None)
-                print(f"irq status is {hex(irq)} chip status is {driver.get_mode_and_status()}")
-            time.sleep(interval)
+#     def loop():
+#         while _recv_running:
+#             irq = driver.get_irq_status()
+#             if irq:
+#                 if driver._status_wait == STATUS_RX_CONTINUOUS:
+#                     driver._interrupt_rx_continuous(None)
+#                 else:
+#                     driver._interrupt_rx(None)
+#                 print(f"irq status is {hex(irq)} chip status is {driver.get_mode_and_status()}")
+#             time.sleep(interval)
 
-    _recv_thread = threading.Thread(target=loop, daemon=True)
-    _recv_thread.start()
+#     _recv_thread = threading.Thread(target=loop, daemon=True)
+#     _recv_thread.start()
 
-def _stop_recv_loop(radio):
-    """
-    Stop the background IRQ polling loop.
-    """
-    global _recv_running, _recv_thread
+# def _stop_recv_loop(radio):
+#     """
+#     Stop the background IRQ polling loop.
+#     """
+#     global _recv_running, _recv_thread
 
-    if not _recv_running:
-        return
+#     if not _recv_running:
+#         return
 
-    _recv_running = False
-    _recv_thread = None
+#     _recv_running = False
+#     _recv_thread = None
 
 def on_rx():
     """
@@ -155,7 +155,7 @@ async def main():
     # start_background_rssi(radio, interval=5)
 
     # Poll IRQ status in a background thread instead of GPIO edge callbacks
-    _start_recv_loop(radio)
+    radio._start_recv_loop()
 
     # Sync word (public network)
     radio.set_sync_word(LORA_SYNC_WORD_PRIVATE)
@@ -199,7 +199,7 @@ async def main():
     finally:
         # This ALWAYS runs, even on Ctrl+C
         print("Shutting down…")
-        _stop_recv_loop(radio)
+        radio._stop_recv_loop()
         radio.end() 
 
 if __name__ == "__main__":
