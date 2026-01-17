@@ -139,6 +139,7 @@ class SX1262Interrupt:
         if irq & IRQ_TIMEOUT:
             # Emit an explicit timeout event
             self.emit("timeout", irq_status=irq)
+            self.clear_irq_status(irq)
             self.set_rx(RX_CONTINUOUS)
 
         # Header error
