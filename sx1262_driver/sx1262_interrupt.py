@@ -57,6 +57,7 @@ class SX1262Interrupt:
         data = None
         if self._payload_tx_rx:
             data = self.get(self._payload_tx_rx)
+        print(f"RX done: payload length {self._payload_tx_rx}, buffer index {self._buffer_index}")
 
         self.emit(
             "rx_done",
