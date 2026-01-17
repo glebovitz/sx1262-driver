@@ -3,8 +3,8 @@ import threading
 import time
 import asyncio
 
-from sx1262_constants import *
-from sx1262 import SX1262 as SX126x  # adjust if your driver file has a different name
+from sx1262_driver.sx1262_constants import *
+from sx1262_driver.sx1262 import SX1262 as SX126x  # adjust if your driver file has a different name
 
 # ------------------------------------------------------------
 # Pin mapping (BCM) — confirmed by your continuity testing
@@ -23,8 +23,8 @@ FREQUENCY_HZ = 910525000   # 910.525 MHz
 BANDWIDTH_HZ = 62500        # 62.5 kHz
 SPREADING_FACTOR = 7
 CODING_RATE = 5              # 4/5
-PREAMBLE_LENGTH =8 
-PAYLOAD_LENGTH =256 
+# PREAMBLE_LENGTH =8 
+# PAYLOAD_LENGTH =256 
 # CRC_ENABLED = True
 # INVERT_IQ = False
 
@@ -173,7 +173,7 @@ async def main():
 
     # Packet parameters
     radio.set_lora_packet(
-        header_type=HEADER_EXPLICIT, # documenation says IMPLICIT.
+        header_type=HEADER_EXPLICIT,
         preamble_length=PREAMBLE_LENGTH,
         payload_length=PAYLOAD_LENGTH,
         crc_type=CRC_ON,

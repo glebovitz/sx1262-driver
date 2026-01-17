@@ -1,10 +1,13 @@
 import time
+import threading
 
 from sx1262_constants import *
 
 class SX1262Interrupt:
     def __init__(self):
         super().__init__()
+        self._recv_thread = None
+        self._recv_running = False
 
     # INTERRUPT HANDLER METHODS
 
@@ -73,3 +76,39 @@ class SX1262Interrupt:
 
     def on_receive(self, callback):
         self._on_receive = callback
+
+    def _start_recv_loop (self, interval=0.01):
+        """
+        Poll the IRQ status register and, if non-zero, invoke
+        the self's internal RX interrupt handler.
+        """
+
+        if self._recv_thread and self._recv_running:
+            return
+        
+        self._recv_running = True
+
+        def loop():
+            while self._recv_running:
+                irq = self.get_irq_status()
+                if irq:
+                    if self._status_wait == STATUS_RX_CONTINUOUS:
+                        self._interrupt_rx_continuous(None)
+                    else:
+                        self._interrupt_rx(None)
+                    print(f"irq status is {hex(irq)} chip status is {self.get_mode_and_status()}")
+                time.sleep(interval)
+
+        self._recv_thread = threading.Thread(target=loop, daemon=True)
+        self._recv_thread.start()
+
+    def _stop_recv_loop(self):
+        """
+        Stop the background IRQ polling loop.
+        """
+
+        if not self._recv_running:
+            return
+
+        self._recv_running = False
+        self._recv_thread = None
