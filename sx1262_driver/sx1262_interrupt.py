@@ -55,9 +55,13 @@ class SX1262Interrupt:
         # Central handler owns IRQ clearing.
 
         (self._payload_tx_rx, self._buffer_index) = self.get_rx_buffer_status()
-
+        data =  None
+        if (self._payload_tx_rx):
+            data =  self.get(self._payload_tx_rx)
+        
         self.emit(
             "rx_done",
+            data=data,
             payload_length=self._payload_tx_rx,
             buffer_index=self._buffer_index,
             irq_status=irq,
@@ -151,14 +155,12 @@ class SX1262Interrupt:
         # Header error: treat like timeout, full recovery
         if irq & IRQ_HEADER_ERR:
             self.emit("header_error", irq_status=irq)
-            self.recover_from_rx_fault(IRQ_HEADER_ERR)
             self._status_irq = 0x0000
             return
 
         # CRC error: treat like timeout, full recovery
         if irq & IRQ_CRC_ERR:
             self.emit("crc_error", irq_status=irq)
-            self.recover_from_rx_fault(IRQ_CRC_ERR)
             self._status_irq = 0x0000
             return
 
