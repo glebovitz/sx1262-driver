@@ -93,3 +93,31 @@ class SX1262Common:
         if status is None:
             return 0
         return status & 0x7E
+    
+def recover_from_rx_fault(self, irq_bits):
+    """
+    Recover the SX1262 from TIMEOUT, CRC_ERR, or HEADER_ERR.
+    This handles the SX1262 'RX deadlock' where SetRx() is ignored
+    unless the chip is forced through STDBY_RC first.
+    """
+
+    # 1. Clear only the IRQ bits that actually fired
+    self.clear_irq_status(irq_bits)
+
+    # 2. Force chip into STDBY_RC (required after timeout/error)
+    self.set_standby(STDBY_RC)
+
+    # 3. Wait for BUSY to go low
+    while self._busy.value():
+        pass
+
+    # 4. Small settling delay (SX1262 errata)
+    time.sleep(0.001)
+
+    # 5. Re-enter continuous RX
+    self.set_rx(RX_CONTINUOUS)
+
+    # 6. Optional: verify
+    mode = self.get_mode_and_status()
+    print("Recovery complete, mode =", hex(mode))
+
