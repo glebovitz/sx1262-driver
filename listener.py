@@ -155,7 +155,7 @@ async def main():
     # start_background_rssi(radio, interval=5)
 
     # Poll IRQ status in a background thread instead of GPIO edge callbacks
-    radio._start_recv_loop()
+    # radio._start_recv_loop()
 
     # Sync word (public network)
     radio.set_sync_word(LORA_SYNC_WORD_PRIVATE)
@@ -199,7 +199,7 @@ async def main():
     finally:
         # This ALWAYS runs, even on Ctrl+C
         print("Shutting down…")
-        radio._stop_recv_loop()
+        # radio._stop_recv_loop()
         radio.end() 
 
 if __name__ == "__main__":

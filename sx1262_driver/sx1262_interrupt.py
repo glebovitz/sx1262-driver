@@ -8,6 +8,7 @@ class SX1262Interrupt:
         super().__init__()
         self._recv_thread = None
         self._recv_running = False
+        self._recv_stopped =  True
 
     # INTERRUPT HANDLER METHODS
 
@@ -86,9 +87,9 @@ class SX1262Interrupt:
         if self._recv_thread and self._recv_running:
             return
         
-        self._recv_running = True
-
         def loop():
+            self._recv_running = True
+            self._recv_stopped = False
             while self._recv_running:
                 irq = self.get_irq_status()
                 if irq:
@@ -98,6 +99,7 @@ class SX1262Interrupt:
                         self._interrupt_rx(None)
                     print(f"irq status is {hex(irq)} chip status is {self.get_mode_and_status()}")
                 time.sleep(interval)
+            self._recv_stopped = True
 
         self._recv_thread = threading.Thread(target=loop, daemon=True)
         self._recv_thread.start()
@@ -109,6 +111,9 @@ class SX1262Interrupt:
 
         if not self._recv_running:
             return
+        
+        while not self._recv_stopped:
+            time.sleep(0.01)
 
         self._recv_running = False
         self._recv_thread = None

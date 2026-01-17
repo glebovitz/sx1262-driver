@@ -33,10 +33,12 @@ class SX1262Common:
 
         self.set_packet_type(LORA_MODEM)
         self._fix_resistance_antenna()
+        self._start_recv_loop()
         return True
 
     def end(self):
         self.sleep(SLEEP_COLD_START)
+        self._stop_recv_loop()
         self.spi.close()
         # close gpio chip handle
         lgpio.gpiochip_close(self.gpio_chip)
