@@ -218,6 +218,7 @@ async def main():
     print("Waiting for packets…")
 
     ok = radio.request(RX_CONTINUOUS)
+    
     if not ok:
         raise RuntimeError("Failed to enter RX_CONTINUOUS mode.")
 
