@@ -140,7 +140,7 @@ class SX1262Interrupt:
             # Emit an explicit timeout event
             self.emit("timeout", irq_status=irq)
             self.clear_irq_status(irq)
-            print("busy ", self._busy_check())
+            print("busy ", self.busy_check())
             self.set_rx(RX_CONTINUOUS)
 
         # Header error
