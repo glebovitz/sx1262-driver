@@ -105,7 +105,7 @@ class SX1262Common:
         self.clear_irq_status(irq_bits)
 
         # 2. Force chip into STDBY_RC (required after timeout/error)
-        self.set_standby(STDBY_RC)
+        self.set_standby(STANDBY_RC)
 
         # 3. Wait for BUSY to go low
         while self._busy.value():
