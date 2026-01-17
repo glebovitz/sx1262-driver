@@ -93,40 +93,49 @@ _recv_running = False
 #     _recv_running = False
 #     _recv_thread = None
 
-def on_rx():
-    """
-    RX callback invoked by the driver when a packet is received.
-    """
-    status = radio.status()
+# def on_rx():
+#     """
+#     RX callback invoked by the driver when a packet is received.
+#     """
+#     status = radio.status()
 
-    if status == STATUS_RX_DONE:
-        print("Packet received!")
-        # available = radio.available()
-        # data = radio.get(available)
+#     if status == STATUS_RX_DONE:
+#         print("Packet received!")
+#         # available = radio.available()
+#         # data = radio.get(available)
 
-        # rssi = radio.packet_rssi()
-        # snr = radio.snr()
+#         # rssi = radio.packet_rssi()
+#         # snr = radio.snr()
 
-        # print("\n--- PACKET RECEIVED ---")
-        # print(f"Bytes: {available}")
-        # print(f"Data:  {data.hex(' ')}")
-        # print(f"RSSI:  {rssi:.1f} dBm")
-        # print(f"SNR:   {snr:.1f} dB")
-        # print("------------------------")
+#         # print("\n--- PACKET RECEIVED ---")
+#         # print(f"Bytes: {available}")
+#         # print(f"Data:  {data.hex(' ')}")
+#         # print(f"RSSI:  {rssi:.1f} dBm")
+#         # print(f"SNR:   {snr:.1f} dB")
+#         # print("------------------------")
 
-    elif status == STATUS_CRC_ERR:
-        print("CRC error")
+#     elif status == STATUS_CRC_ERR:
+#         print("CRC error")
 
-    elif status == STATUS_HEADER_ERR:
-        print("Header error")
+#     elif status == STATUS_HEADER_ERR:
+#         print("Header error")
 
-    elif status == STATUS_RX_TIMEOUT:
-        print("RX timeout (unexpected in continuous mode)")
-    else:
-        print("Nada")
+#     elif status == STATUS_RX_TIMEOUT:
+#         print("RX timeout (unexpected in continuous mode)")
+#     else:
+#         print("Nada")
 
-    irq = radio.get_irq_status()
-    radio.clear_irq_status(irq)
+#     irq = radio.get_irq_status()
+#     radio.clear_irq_status(irq)
+
+def handle_header_error(irq_status):
+    print(f"Header error event: irq_status={hex(irq_status)}")
+
+def handle_timeout(irq_status):
+    print(f"Timeout event: irq_status={hex(irq_status)}")
+
+def handle_crc_error(irq_status):
+    print(f"CRC error event: irq_status={hex(irq_status)}")
 
 def handle_rx_done(payload_length, buffer_index, irq_status):
     print(f"RX done event: payload_length={payload_length}, buffer_index={buffer_index}, irq_status={hex(irq_status)}")
@@ -161,6 +170,9 @@ async def main():
     )
 
     radio.on("rx_done", handle_rx_done)
+    radio.on("header_error", handle_header_error)
+    radio.on("timeout", handle_timeout)
+    radio.on("crc_error", handle_crc_error)
 
     if not ok:
         raise RuntimeError("SX1262 failed to enter STDBY_RC. Check BUSY, RESET, NSS wiring.")
@@ -200,7 +212,7 @@ async def main():
     radio.set_rx_gain(RX_GAIN_BOOSTED)
 
     # Register callback
-    radio.on_receive(on_rx)
+    # radio.on_receive(on_rx)
 
     print(f"Starting continuous receive at {FREQUENCY_HZ/1e6:.6f} MHz…")
     print("Waiting for packets…")

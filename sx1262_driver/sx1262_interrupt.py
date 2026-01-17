@@ -155,3 +155,4 @@ class SX1262Interrupt:
 
         # Clear IRQs at the end to release the latch
         self.clear_irq_status(irq)
+        self._status_irq = 0x0000
