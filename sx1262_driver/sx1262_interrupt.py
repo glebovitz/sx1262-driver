@@ -116,6 +116,5 @@ class SX1262Interrupt:
         
         while not self._recv_stopped:
             time.sleep(0.01)
-        threading.
 
         self._recv_thread = None
